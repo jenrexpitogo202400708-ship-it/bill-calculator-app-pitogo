@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Electric Bill Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <h1 class="nav-title">⚡ Electric Bill Calculator</h1>
+            <div class="nav-links">
+                <a href="user_dashboard.html" class="nav-link">Dashboard</a>
+                <a href="form.html" class="nav-link">Calculator</a>
+                <a href="history.html" class="nav-link">History</a>
+                <a href="profile.html" class="nav-link active">Profile</a>
+                <button class="nav-link btn-danger" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-container">
+            <h1>User Profile</h1>
+
+            <div class="profile-section">
+                <h2>Account Information</h2>
+                <div class="profile-info">
+                    <div class="info-group">
+                        <label>Email</label>
+                        <p id="userEmail">-</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Full Name</label>
+                        <p id="userFullName">-</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Account Created</label>
+                        <p id="userCreatedAt">-</p>
+                    </div>
+                    <div class="info-group">
+                        <label>User ID</label>
+                        <p id="userId" style="font-size: 0.9em; color: #666;font-family: monospace;">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Update Profile</h2>
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Your full name">
+                    </div>
+                    <button type="button" class="btn-primary" onclick="handleUpdateProfile()">Update Profile</button>
+                </form>
+            </div>
+
+            <div class="profile-section">
+                <h2>Security</h2>
+                <div class="security-info">
+                    <p>Password changes are managed through Supabase authentication.</p>
+                    <p><a href="https://supabase.com" target="_blank">Manage account settings →</a></p>
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div class="profile-section danger-zone">
+                <h2>Danger Zone</h2>
+                <p>Be careful with these actions as they cannot be undone.</p>
+                <button class="btn-danger" onclick="handleLogout()">Logout from This Device</button>
+                <button class="btn-danger" onclick="handleLogoutAll()">Logout from All Devices</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Electric Bill Calculator. All rights reserved.</p>
+    </footer>
+
+    <!-- Supabase scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Check authentication on page load
+        document.addEventListener("DOMContentLoaded", async () => {
+            const session = await initAuth();
+            if (session) {
+                await loadProfileData();
+            }
+        });
+
+        async function loadProfileData() {
+            const user = await getCurrentUser();
+            if (!user) return;
+
+            // Display user information
+            document.getElementById("userEmail").textContent = user.email;
+            document.getElementById("userFullName").textContent = user.user_metadata?.full_name || "Not set";
+            document.getElementById("userId").textContent = user.id;
+            document.getElementById("fullName").value = user.user_metadata?.full_name || "";
+
+            const createdDate = new Date(user.created_at);
+            document.getElementById("userCreatedAt").textContent = createdDate.toLocaleDateString();
+        }
+
+        async function handleUpdateProfile() {
+            const fullName = document.getElementById("fullName").value.trim();
+            const messageDiv = document.getElementById("message");
+
+            if (!fullName) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Please enter a full name!";
+                return;
+            }
+
+            // Update user metadata
+            const { data, error } = await supabaseClient.auth.updateUser({
+                data: {
+                    full_name: fullName
+                }
+            });
+
+            if (error) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Failed to update profile: " + error.message;
+                console.error("Update error:", error);
+                return;
+            }
+
+            messageDiv.className = "message success";
+            messageDiv.textContent = "Profile updated successfully!";
+            await loadProfileData();
+        }
+
+        async function handleLogout() {
+            const success = await signOut();
+            if (success) {
+                window.location.href = "login.html";
+            } else {
+                alert("Failed to logout");
+            }
+        }
+
+        async function handleLogoutAll() {
+            if (!confirm("This will logout your account from all devices. Continue?")) {
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.signOut({ scope: "global" });
+            if (error) {
+                alert("Failed to logout: " + error.message);
+                return;
+            }
+
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

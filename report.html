@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report - Electric Bill Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <h1 class="nav-title">⚡ Electric Bill Calculator</h1>
+            <div class="nav-links">
+                <a href="user_dashboard.html" class="nav-link">Dashboard</a>
+                <a href="form.html" class="nav-link">Calculator</a>
+                <a href="history.html" class="nav-link">History</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <button class="nav-link btn-danger" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="history-container">
+            <h1>Usage Report</h1>
+            <p class="subtitle">Detailed electricity usage and bill report</p>
+
+            <div class="stats-section">
+                <h2>Summary Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Calculations</h3>
+                        <p id="totalCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Bill</h3>
+                        <p>₱ <span id="averageBill">0.00</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Highest Bill</h3>
+                        <p>₱ <span id="highestBill">0.00</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Lowest Bill</h3>
+                        <p>₱ <span id="lowestBill">0.00</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Detailed Records</h2>
+            <table id="reportTable" class="calculations-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Power Consumption (kWh)</th>
+                        <th>Cost per kWh (₱)</th>
+                        <th>Total Bill (₱)</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+
+            <div class="filter-section">
+                <button class="btn-secondary" onclick="printReport()">🖨️ Print Report</button>
+                <button class="btn-secondary" onclick="downloadCSV()">📥 Download CSV</button>
+                <button class="btn-secondary" onclick="loadCalculations()">🔄 Refresh</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Electric Bill Calculator. All rights reserved.</p>
+    </footer>
+
+    <!-- Supabase scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        let allCalculations = [];
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const session = await initAuth();
+            if (session) {
+                await loadCalculations();
+            }
+        });
+
+        async function loadCalculations() {
+            const user = await getCurrentUser();
+            if (!user) return;
+
+            const { data, error } = await supabaseClient
+                .from("calculations")
+                .select("*")
+                .eq("user_id", user.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.error("Load error:", error);
+                return;
+            }
+
+            allCalculations = data;
+            displayCalculations(data);
+            calculateStats(data);
+        }
+
+        function displayCalculations(calculations) {
+            const tbody = document.querySelector("#reportTable tbody");
+            tbody.innerHTML = "";
+
+            if (calculations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No calculations to display.</td></tr>';
+                return;
+            }
+
+            calculations.forEach(calc => {
+                const row = tbody.insertRow();
+                const date = new Date(calc.created_at);
+                row.innerHTML = `
+                    <td>${calc.month}</td>
+                    <td>${parseFloat(calc.power_consumption).toFixed(2)}</td>
+                    <td>${parseFloat(calc.cost_per_kwh).toFixed(2)}</td>
+                    <td>${parseFloat(calc.result).toFixed(2)}</td>
+                    <td>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</td>
+                `;
+            });
+        }
+
+        function calculateStats(calculations) {
+            if (calculations.length === 0) {
+                document.getElementById("totalCount").textContent = "0";
+                document.getElementById("averageBill").textContent = "0.00";
+                document.getElementById("highestBill").textContent = "0.00";
+                document.getElementById("lowestBill").textContent = "0.00";
+                return;
+            }
+
+            const bills = calculations.map(c => parseFloat(c.result));
+            const total = bills.reduce((a, b) => a + b, 0);
+            const average = total / bills.length;
+            const highest = Math.max(...bills);
+            const lowest = Math.min(...bills);
+
+            document.getElementById("totalCount").textContent = calculations.length;
+            document.getElementById("averageBill").textContent = average.toFixed(2);
+            document.getElementById("highestBill").textContent = highest.toFixed(2);
+            document.getElementById("lowestBill").textContent = lowest.toFixed(2);
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function downloadCSV() {
+            if (allCalculations.length === 0) {
+                alert("No data to download!");
+                return;
+            }
+
+            let csv = "Month,Power Consumption (kWh),Cost per kWh (₱),Total Bill (₱),Date\n";
+            
+            allCalculations.forEach(calc => {
+                const date = new Date(calc.created_at).toLocaleDateString();
+                csv += `${calc.month},${calc.power_consumption},${calc.cost_per_kwh},${calc.result},${date}\n`;
+            });
+
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "electricity_report.csv";
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        async function handleLogout() {
+            const success = await signOut();
+            if (success) {
+                window.location.href = "login.html";
+            } else {
+                alert("Failed to logout");
+            }
+        }
+    </script>
+</body>
+</html>

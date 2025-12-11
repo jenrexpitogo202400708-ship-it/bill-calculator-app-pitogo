@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Electric Bill Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Load Supabase scripts FIRST in head -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase_config.js"></script>
+  <script src="js/auth.js"></script>
+</head>
+
+<body style="background-color: #E2BCBC;">
+
+<div class="phone">
+
+  <h2 class="title">Dashboard</h2>
+  <div class="logo">⚡</div>
+  <h3 style="text-align:center;">Electric Bill Calculator</h3>
+
+  <div class="input-box">
+    <input id="month" type="text" placeholder="Month">
+  </div>
+
+  <div class="input-box">
+    <input id="kwh" type="number" placeholder="Power consumption (kWh)">
+  </div>
+
+  <div class="input-box">
+    <input id="rate" type="number" placeholder="Cost per kWh">
+  </div>
+
+  <div class="button">
+    <button type="button" id="calcBtn">Calculate</button>
+  </div>
+
+  <div class="input-box">
+    <input id="result" type="text" placeholder="Result" readonly>
+  </div>
+
+  <div class="button" style="width:40%; background:#d23cff;" onclick="saveBill()">Save</div>
+
+  <a href="menu.html" class="button">Menu</a>
+
+</div>
+
+<!-- Helpful UI when DB table is missing -->
+<div id="dbErrorHelp" style="display:none; position:fixed; left:50%; transform:translateX(-50%); top:10%; max-width:720px; background:#fff; color:#111; border-radius:10px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.35); font-size:13px; z-index:9999;">
+  <div style="font-weight:700; margin-bottom:8px;">Database table not found</div>
+  <div style="margin-bottom:8px;">The `bills` table was not found in your Supabase project. To fix this, run the SQL below in your Supabase Project → SQL Editor, then reload this page.</div>
+  <pre id="dbSql" style="background:#f6f6f6; padding:10px; border-radius:6px; overflow:auto; max-height:260px; font-size:12px;">
+-- Run this in Supabase → SQL Editor
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE IF NOT EXISTS public.bills (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  month TEXT NOT NULL,
+  kwh NUMERIC(10,2) NOT NULL,
+  rate NUMERIC(10,2) NOT NULL,
+  amount NUMERIC(10,2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_bills_user_id ON public.bills(user_id);
+CREATE INDEX IF NOT EXISTS idx_bills_created_at ON public.bills(created_at DESC);
+
+ALTER TABLE public.bills ENABLE ROW LEVEL SECURITY;
+
+-- DROP policies if they exist, then create them (CREATE POLICY has no IF NOT EXISTS)
+DROP POLICY IF EXISTS "Users can insert own bills" ON public.bills;
+CREATE POLICY "Users can insert own bills"
+  ON public.bills FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view own bills" ON public.bills;
+CREATE POLICY "Users can view own bills"
+  ON public.bills FOR SELECT
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own bills" ON public.bills;
+CREATE POLICY "Users can update own bills"
+  ON public.bills FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own bills" ON public.bills;
+CREATE POLICY "Users can delete own bills"
+  ON public.bills FOR DELETE
+  USING (auth.uid() = user_id);
+  </pre>
+  <div style="display:flex; gap:8px; margin-top:8px;">
+    <button id="copySqlBtn" style="padding:8px 12px; background:#2b6cb0; color:#fff; border-radius:6px; border:none; cursor:pointer;">Copy SQL</button>
+    <button id="dismissDbHelp" style="padding:8px 12px; background:#ccc; color:#222; border-radius:6px; border:none; cursor:pointer;">Dismiss</button>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- CALCULATION SCRIPT            -->
+<!-- ============================= -->
+<script>
+// Single script block: protect page, handle calculation and saving
+document.addEventListener("DOMContentLoaded", async () => {
+  // Ensure user is authenticated (redirects to login.html if not)
+  await requireAuth("login.html");
+
+  // Calculation handler
+  const calcBtn = document.getElementById("calcBtn");
+  if (calcBtn) {
+    calcBtn.addEventListener("click", async function () {
+      const kwh = parseFloat(document.getElementById("kwh").value);
+      const rate = parseFloat(document.getElementById("rate").value);
+
+      if (isNaN(kwh) || isNaN(rate)) {
+        alert("Please enter valid numbers for power and rate.");
+        return;
+      }
+
+      const total = kwh * rate;
+      document.getElementById("result").value = "₱ " + total.toFixed(2);
+      // After calculating, save the bill to history
+      try {
+        // Attempt to save; saveBill performs its own validation and will alert if fields missing
+        const saved = await saveBill();
+        if (saved) {
+          // refresh recent bills list
+          await loadRecentBills();
+        }
+      } catch (e) {
+        console.error('Auto-save after calculation failed:', e);
+      }
+    });
+  }
+});
+
+async function saveBill() {
+  const user = await getCurrentUser();
+  if (!user) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const month = document.getElementById("month").value.trim();
+  const kwh = parseFloat(document.getElementById("kwh").value);
+  const rate = parseFloat(document.getElementById("rate").value);
+  const amount = kwh * rate;
+
+  // Validation
+  if (!month) {
+    alert("Please enter the month.");
+    return;
+  }
+
+  if (isNaN(kwh) || isNaN(rate)) {
+    alert("Please enter valid numbers for power and rate.");
+    return;
+  }
+
+  // Save to Supabase (use supabaseClient)
+  const { data, error } = await supabaseClient
+    .from("bills")
+    .insert([{
+      user_id: user.id,
+      month: month,
+      kwh: kwh,
+      rate: rate,
+      amount: amount
+    }]);
+
+  if (error) {
+    console.error("Error saving bill:", error);
+    // Detect missing table error from Supabase/Postgres and show helpful instructions
+    const msg = error?.message || String(error);
+    if (msg.includes("Could not find the table") || msg.toLowerCase().includes('relation "bills" does not exist') ) {
+      try {
+        document.getElementById('dbErrorHelp').style.display = 'block';
+      } catch (e) { /* ignore */ }
+      // As a fallback, save to localStorage so the app remains usable offline/while DB is fixed
+      try {
+        const fallback = { user_id: user.id, month, kwh, rate, amount, created_at: new Date().toISOString() };
+        const existing = JSON.parse(localStorage.getItem('ebc_bills') || '[]');
+        existing.unshift(fallback);
+        localStorage.setItem('ebc_bills', JSON.stringify(existing));
+        alert("Warning: Database missing. Bill saved locally in your browser so you can continue. Run the provided SQL in Supabase to enable cloud saving.");
+        // refresh recent bills list (will include local items)
+        await loadRecentBills();
+        return true;
+      } catch (e) {
+        console.error('Local fallback save failed:', e);
+        alert("Error saving bill: Could not find the table 'bills' in the database. Please run the provided SQL in the Supabase SQL editor.");
+        return false;
+      }
+    }
+    alert("Error saving bill: " + msg);
+    return false;
+  } else {
+    alert("Bill saved successfully!");
+    // Clear inputs
+    document.getElementById("month").value = "";
+    document.getElementById("kwh").value = "";
+    document.getElementById("rate").value = "";
+    document.getElementById("result").value = "";
+    return true;
+  }
+}
+
+// Load recent bills (last 5) and display on the dashboard
+async function loadRecentBills() {
+  const containerId = 'recentBills';
+  let container = document.getElementById(containerId);
+  if (!container) {
+    // create container below the inputs
+    container = document.createElement('div');
+    container.id = containerId;
+    container.style.margin = '12px';
+    container.style.fontSize = '13px';
+    document.querySelector('.phone').appendChild(container);
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    container.innerHTML = '<div style="color:#222;">Log in to see billing history.</div>';
+    return;
+  }
+
+  const { data: bills, error } = await supabaseClient
+    .from('bills')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error('Error loading recent bills:', error);
+    // Fallback: try localStorage
+    try {
+      const local = JSON.parse(localStorage.getItem('ebc_bills') || '[]');
+      if (!local || local.length === 0) {
+        container.innerHTML = '<div style="color:#222;">No recent bills. Calculate one to save it.</div>';
+        return;
+      }
+      let htmlLocal = '<div style="font-weight:bold; margin-bottom:8px;">Recent bills (local)</div>';
+      htmlLocal += '<table style="width:100%; font-size:13px; border-collapse:collapse;">';
+      local.slice(0,5).forEach(b => {
+        htmlLocal += `<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">${b.month || ''}</td><td style="padding:6px;">${parseFloat(b.kwh||0).toFixed(2)} kWh</td><td style="padding:6px;">₱ ${parseFloat(b.rate||0).toFixed(2)}</td><td style="padding:6px;">₱ ${parseFloat(b.amount||0).toFixed(2)}</td></tr>`;
+      });
+      htmlLocal += '</table>';
+      container.innerHTML = htmlLocal;
+      return;
+    } catch (e) {
+      console.error('Error reading local bills:', e);
+      container.innerHTML = '<div style="color:red;">Error loading recent bills.</div>';
+      return;
+    }
+  }
+
+  if (!bills || bills.length === 0) {
+    container.innerHTML = '<div style="color:#222;">No recent bills. Calculate one to save it.</div>';
+    return;
+  }
+
+  let html = '<div style="font-weight:bold; margin-bottom:8px;">Recent bills</div>';
+  html += '<table style="width:100%; font-size:13px; border-collapse:collapse;">';
+  bills.forEach(b => {
+    html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">${b.month || ''}</td><td style="padding:6px;">${parseFloat(b.kwh||0).toFixed(2)} kWh</td><td style="padding:6px;">₱ ${parseFloat(b.rate||0).toFixed(2)}</td><td style="padding:6px;">₱ ${parseFloat(b.amount||0).toFixed(2)}</td></tr>`;
+  });
+  html += '</table>';
+  container.innerHTML = html;
+}
+
+// Load recent bills on page load
+document.addEventListener('DOMContentLoaded', async () => {
+  // after requireAuth executed above, load recent bills
+  try { await loadRecentBills(); } catch (e) { /* ignore */ }
+});
+
+// Wire up copy/dismiss buttons for the DB help panel
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const copyBtn = document.getElementById('copySqlBtn');
+    const dismissBtn = document.getElementById('dismissDbHelp');
+    if (copyBtn) copyBtn.addEventListener('click', () => {
+      const txt = document.getElementById('dbSql')?.innerText || '';
+      navigator.clipboard?.writeText(txt).then(() => {
+        alert('SQL copied to clipboard. Paste it into Supabase → SQL Editor → Run');
+      }).catch(() => {
+        alert('Copy failed. Select and copy the SQL manually from the box.');
+      });
+    });
+    if (dismissBtn) dismissBtn.addEventListener('click', () => {
+      document.getElementById('dbErrorHelp').style.display = 'none';
+    });
+  } catch (e) {
+    /* ignore */
+  }
+});
+</script>
+
+</body>
+</html>

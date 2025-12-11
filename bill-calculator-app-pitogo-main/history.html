@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing History - Electric Bill Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Load Supabase scripts FIRST -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase_config.js"></script>
+  <script src="js/auth.js"></script>
+</head>
+
+<body style="background-color: #E2BCBC;">
+
+<div class="phone">
+
+  <h2 class="title">Billing History</h2>
+  <div class="logo">⚡</div>
+
+  <!-- Bills Table -->
+  <div style="overflow-x:auto; margin:12px 0;">
+    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+      <thead>
+        <tr style="background:#D23CFF; color:white;">
+          <th style="border:1px solid #999; padding:6px;">Month</th>
+          <th style="border:1px solid #999; padding:6px;">kWh</th>
+          <th style="border:1px solid #999; padding:6px;">Rate</th>
+          <th style="border:1px solid #999; padding:6px;">Amount</th>
+        </tr>
+      </thead>
+      <tbody id="billsTable">
+        <tr><td colspan="4" style="text-align:center; padding:12px;">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="totalDiv" style="text-align:center; font-weight:bold; margin:12px 0; display:none;">
+    Total: <span id="grandTotal" style="color:#d23cff;">₱ 0.00</span>
+  </div>
+
+  <a href="menu.html" class="button">Menu</a>
+
+</div>
+
+<script>
+async function loadBills() {
+  const user = await getCurrentUser();
+  if (!user) {
+    document.getElementById("billsTable").innerHTML = 
+      '<tr><td colspan="4" style="text-align:center; padding:12px;">Please log in to view bills.</td></tr>';
+    return;
+  }
+
+  const { data: bills, error } = await supabaseClient
+    .from("bills")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error loading bills:", error);
+    document.getElementById("billsTable").innerHTML = 
+      '<tr><td colspan="4" style="text-align:center; padding:12px; color:red;">Error loading bills: ' + error.message + '</td></tr>';
+    return;
+  }
+
+  if (!bills || bills.length === 0) {
+    document.getElementById("billsTable").innerHTML = 
+      '<tr><td colspan="4" style="text-align:center; padding:12px;">No bills found. Calculate your first bill on the Dashboard!</td></tr>';
+    return;
+  }
+
+  // Display each bill
+  let grandTotal = 0;
+  let html = "";
+  bills.forEach(bill => {
+    grandTotal += parseFloat(bill.amount || 0);
+    html += `
+      <tr style="background:#f9f9f9;">
+        <td style="border:1px solid #ddd; padding:6px;">${bill.month || "N/A"}</td>
+        <td style="border:1px solid #ddd; padding:6px;">${parseFloat(bill.kwh || 0).toFixed(2)}</td>
+        <td style="border:1px solid #ddd; padding:6px;">₱ ${parseFloat(bill.rate || 0).toFixed(2)}</td>
+        <td style="border:1px solid #ddd; padding:6px;">₱ ${parseFloat(bill.amount || 0).toFixed(2)}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("billsTable").innerHTML = html;
+  document.getElementById("grandTotal").textContent = "₱ " + grandTotal.toFixed(2);
+  document.getElementById("totalDiv").style.display = "block";
+}
+
+// Protect page and load bills
+document.addEventListener("DOMContentLoaded", async () => {
+  await requireAuth("login.html");
+  await loadBills();
+});
+</script>
+
+</body>
+</html>

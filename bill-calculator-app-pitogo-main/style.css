@@ -1,0 +1,201 @@
+/* --- Mobile / default styles --- */
+.profile-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  display: block;
+  margin: 0 auto;
+  position: absolute;
+  top: 150px;
+  right: 30px;
+  overflow: hidden;
+  background: white;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.icon-box {
+  background: #1f3a69;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 26px;
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.gradient-box {
+  width: 100%;
+  height: 70px;
+  margin-top: 25px;
+  border-radius: 15px;
+  background: linear-gradient(to right, #6f7cf3, #5014ff);
+  position: relative;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #87CEEB;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.phone {
+  width: 430px;
+  height: 650px;
+  background-color: #87CEEB;
+  border-radius: 25px;
+  overflow-y: auto;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  position: relative;
+  padding: 20px;
+}
+
+.screen { display: none; padding: 30px; }
+.active { display: block; }
+
+.title {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 28px;
+  color: #001f54;
+  font-weight: bold;
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+  background: white;
+  border-radius: 20px;
+  margin: 20px auto;
+  font-size: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #7a2bbf;
+}
+
+.input-box {
+  width: 90%;
+  margin: 10px auto 15px auto;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+button, .button {
+  padding: 10px 18px;
+  background-color: #5014ff;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  width: 80%;
+  margin: 20px auto;
+  text-align: center;
+  font-size: 18px;
+  border-radius: 25px;
+}
+
+.button:hover, button:hover { opacity: 0.8; background: #ff85cc; }
+
+.button.back-btn {
+  display: block;
+  width: 150px;  
+  margin: 15px auto 0 auto;
+  background-color: #888;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.report-entry { margin-bottom: 15px; line-height: 1.4; }
+
+/* --- Desktop media query --- */
+@media (min-width: 1024px) {
+  body {
+    justify-content: center;
+    align-items: flex-start;
+    height: auto;
+    padding: 40px;
+    background-color: #f0f0f0;
+  }
+
+  .phone {
+    width: 800px;
+    height: auto;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.3);
+  }
+
+  .title {
+    font-size: 36px;
+  }
+
+  .logo {
+    width: 200px;
+    height: 200px;
+    font-size: 100px;
+    margin: 30px auto;
+  }
+
+  .input-box {
+    width: 70%;
+    margin: 15px auto;
+  }
+
+  .input-box input {
+    padding: 18px;
+    font-size: 16px;
+  }
+
+  .button {
+    width: 60%;
+    margin: 25px auto;
+    padding: 18px;
+    font-size: 20px;
+    border-radius: 30px;
+  }
+
+  .profile-image {
+    width: 180px;
+    height: 180px;
+    top: 30px;
+    right: 30px;
+  }
+
+  .report-entry {
+    font-size: 18px;
+  }
+}

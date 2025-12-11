@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Electric Bill Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1>Electric Bill Calculator</h1>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Your password">
+                </div>
+                <button type="button" class="btn-primary" onclick="handleLogin()">Login</button>
+            </form>
+            <p class="auth-link">Don't have an account? <a href="register.html">Register here</a></p>
+            <p class="home-link"><a href="index.html">Back to Home</a></p>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Supabase scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Check if user is already logged in
+        document.addEventListener("DOMContentLoaded", async () => {
+            await redirectIfAuthenticated();
+        });
+
+        async function handleLogin() {
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const messageDiv = document.getElementById("message");
+
+            // Validation
+            if (!email || !password) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Please fill in all fields!";
+                return;
+            }
+
+            // Sign in with Supabase
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Login failed: " + error.message;
+                console.error("Login error:", error);
+                return;
+            }
+
+            // Check if email is confirmed
+            const user = data.user;
+            if (!user.email_confirmed_at) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "⚠ Email not confirmed! Please check your email and click the confirmation link. You may need to check spam folder.";
+                
+                // Sign out immediately since email is not confirmed
+                await supabaseClient.auth.signOut();
+                
+                setTimeout(() => {
+                    document.getElementById("email").focus();
+                }, 1500);
+                return;
+            }
+
+            // Email is confirmed - allow login
+            messageDiv.className = "message success";
+            messageDiv.textContent = "✓ Login successful! Redirecting to dashboard...";
+            setTimeout(() => {
+                window.location.href = "user_dashboard.html";
+            }, 1000);
+        }
+
+        // Allow Enter key to submit
+        document.getElementById("loginForm").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>

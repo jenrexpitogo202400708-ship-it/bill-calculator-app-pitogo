@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile - Electric Bill Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body style="background-color: #E2BCBC;">
+  <div class="phone">
+    <div class="header-box">
+      <div class="icon-box">⚡</div>
+      <h2 class="header-title">Electric Bill Calculator</h2>
+    </div>
+
+    <div class="gradient-box"></div>
+
+    <div class="profile-image">
+      <img src="profile.png" alt="" />
+    </div>
+
+    <h2 class="title" style="margin-top: 80px;">Profile</h2>
+
+    <!-- Supabase user info -->
+    <p>Email: <span id="p_email"></span></p>
+    <p>User ID: <span id="p_id"></span></p>
+    <p>Full Name: <span id="p_full_name"></span></p>
+    <p>Phone: <span id="p_phone"></span></p>
+
+    <h3>Change Password</h3>
+
+    <form id="changePasswordForm">
+      <div class="input-box">
+        <input type="password" id="currentPassword" placeholder="Current Password" />
+      </div>
+
+      <div class="input-box">
+        <input type="password" id="newPassword" placeholder="New Password" />
+      </div>
+
+      <div class="input-box">
+        <input type="password" id="confirmPassword" placeholder="Confirm New Password" />
+      </div>
+
+      <div class="button">
+        <button type="submit">Change Password</button>
+      </div>
+    </form>
+
+    <a href="dashboard.html" class="button back-btn">Back</a>
+    <div id="profileMessage" style="color: red; margin-top: 10px;"></div>
+  </div>
+
+  <!-- Supabase Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase_config.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    async function loadProfile() {
+      const user = await requireAuth(); // ensure logged in
+      if (!user) return;
+
+      document.getElementById("p_email").textContent = user.email;
+      document.getElementById("p_id").textContent = user.id;
+
+      // fetch profile from Supabase
+      const { data: profile, error } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        document.getElementById("p_full_name").textContent = profile.full_name || "-";
+        document.getElementById("p_phone").textContent = profile.phone || "-";
+      }
+    }
+
+    // Change password
+    document.getElementById("changePasswordForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const current = document.getElementById("currentPassword").value;
+      const newPass = document.getElementById("newPassword").value;
+      const confirm = document.getElementById("confirmPassword").value;
+
+      if (!current || !newPass || !confirm) {
+        document.getElementById("profileMessage").textContent = "All fields are required.";
+        return;
+      }
+
+      if (newPass !== confirm) {
+        document.getElementById("profileMessage").textContent = "New passwords do not match.";
+        return;
+      }
+
+      try {
+        const user = await requireAuth();
+        if (!user) return;
+
+        // Supabase password update
+        const { data, error } = await supabaseClient.auth.updateUser({
+          password: newPass
+        });
+
+        if (error) {
+          document.getElementById("profileMessage").textContent = error.message;
+          return;
+        }
+
+        document.getElementById("profileMessage").textContent = "Password changed successfully.";
+        document.getElementById("changePasswordForm").reset();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("profileMessage").textContent = "Error updating password.";
+      }
+    });
+
+    window.onload = loadProfile;
+  </script>
+</body>
+</html>

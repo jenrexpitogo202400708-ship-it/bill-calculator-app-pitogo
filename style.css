@@ -1,0 +1,1440 @@
+/* Simple & Clean Design */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Primary Colors */
+    --primary: #3b82f6;
+    --primary-dark: #1e40af;
+    --primary-light: #dbeafe;
+    
+    /* Secondary Colors */
+    --secondary: #8b5cf6;
+    --secondary-light: #ede9fe;
+    
+    /* Status Colors */
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --danger: #ef4444;
+    --danger-light: #fee2e2;
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+    
+    /* Neutral Colors */
+    --dark: #1f2937;
+    --dark-light: #374151;
+    --gray: #6b7280;
+    --gray-light: #f3f4f6;
+    --light: #f8fafc;
+    --border: #e5e7eb;
+    --white: #ffffff;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    line-height: 1.6;
+    color: var(--dark);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e0e7ff 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+h1 { font-size: 3rem; }
+h2 { font-size: 2.2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+p {
+    font-size: 1rem;
+    color: var(--gray);
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* ============================================
+   NAVIGATION BAR
+   ============================================ */
+
+.navbar {
+    background: linear-gradient(135deg, var(--white) 0%, var(--primary-light) 100%);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 3px solid var(--primary);
+    padding: 1.2rem 0;
+}
+
+.nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-title {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    color: var(--dark);
+    text-decoration: none;
+    padding: 0.7rem 1.3rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    background: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.nav-link:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-link.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--white);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+button {
+    padding: 0.9rem 2.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+}
+
+/* ============================================
+   FORMS & INPUTS
+   ============================================ */
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+    color: var(--dark);
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background-color: var(--white);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background-color: rgba(59, 130, 246, 0.02);
+}
+
+/* ============================================
+   ALERTS & MESSAGES
+   ============================================ */
+
+.message {
+    padding: 1.3rem 1.8rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    display: none;
+    border-left: 5px solid;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.error {
+    background: linear-gradient(135deg, var(--danger-light) 0%, #fecaca 100%);
+    color: #7f1d1d;
+    border-left-color: var(--danger);
+    display: block;
+    box-shadow: var(--shadow-md);
+}
+
+.message.success {
+    background: linear-gradient(135deg, var(--success-light) 0%, #a7f3d0 100%);
+    color: #065f46;
+    border-left-color: var(--success);
+    display: block;
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.hero {
+    text-align: center;
+    padding: 140px 40px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: var(--white);
+    border-radius: 16px;
+    margin: 40px 0;
+    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    filter: blur(60px);
+}
+
+.hero h1 {
+    font-size: 3.8rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -1px;
+}
+
+.hero p {
+    font-size: 1.4rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-buttons a {
+    padding: 1.1rem 3rem;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.hero-buttons .btn-primary {
+    background-color: var(--white);
+    color: var(--primary);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+}
+
+.hero-buttons .btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+
+.features {
+    margin: 120px 0;
+}
+
+.features h2 {
+    text-align: center;
+    margin-bottom: 4rem;
+    color: var(--dark);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    transition: all 0.3s ease;
+    border-top: 5px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.6s ease;
+    z-index: 0;
+}
+
+.feature-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+    color: var(--dark);
+    position: relative;
+    z-index: 1;
+}
+
+.feature-card p {
+    color: var(--gray);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   LOGIN/REGISTER PAGES
+   ============================================ */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+.login-card {
+    background: var(--white);
+    padding: 3.5rem;
+    border-radius: 12px;
+    box-shadow: 0 25px 60px rgba(59, 130, 246, 0.35);
+    width: 100%;
+    max-width: 450px;
+    border-top: 5px solid var(--primary);
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-card h1 {
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+}
+
+.login-card h2 {
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 3rem;
+    font-size: 1.5rem;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.auth-link a {
+    color: var(--primary);
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.auth-link a:hover {
+    color: var(--secondary);
+    text-decoration: underline;
+}
+
+.home-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.home-link a {
+    color: var(--gray);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.home-link a:hover {
+    color: var(--primary);
+}
+
+/* ============================================
+   DASHBOARD
+   ============================================ */
+
+.dashboard-header {
+    text-align: center;
+    margin: 4rem 0;
+}
+
+.dashboard-header h1 {
+    color: var(--dark);
+    margin-bottom: 1rem;
+}
+
+.dashboard-header p {
+    font-size: 1.1rem;
+    color: var(--gray);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    margin: 4rem 0;
+}
+
+.dashboard-card {
+    background: var(--white);
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+    border: 2px solid var(--border);
+    border-top: 5px solid var(--primary);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+    border-color: var(--primary);
+}
+
+.dashboard-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--dark);
+}
+
+.dashboard-card p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   CALCULATOR
+   ============================================ */
+
+.calculator-container {
+    background: var(--white);
+    padding: 3.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    max-width: 650px;
+    margin: 4rem auto;
+    border-top: 5px solid var(--primary);
+}
+
+.calculator-container h1 {
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 3rem;
+    font-size: 2.2rem;
+}
+
+.result-section {
+    background: linear-gradient(135deg, var(--success-light) 0%, #a7f3d0 100%);
+    border-left: 5px solid var(--success);
+    padding: 2.5rem;
+    border-radius: 8px;
+    margin: 2.5rem 0;
+    text-align: center;
+    display: none;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+    animation: slideDown 0.3s ease;
+}
+
+.result-section.show {
+    display: block;
+}
+
+.result-display {
+    font-size: 2.5rem;
+    color: #065f46;
+    font-weight: 900;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+.calculations-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin: 3rem 0;
+}
+
+.calculations-table th {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    padding: 1.5rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.calculations-table td {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.calculations-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.calculations-table tbody tr:hover {
+    background: linear-gradient(90deg, var(--primary-light) 0%, transparent 100%);
+}
+
+.calculations-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================
+   HISTORY PAGE
+   ============================================ */
+
+.history-container {
+    background: var(--white);
+    padding: 3.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    margin: 4rem 0;
+    border-top: 5px solid var(--primary);
+}
+
+.history-container h1 {
+    color: var(--dark);
+    margin-bottom: 0.8rem;
+    font-size: 2.2rem;
+}
+
+.subtitle {
+    color: var(--gray);
+    margin-bottom: 2.5rem;
+}
+
+.filter-section {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.filter-section button {
+    flex: 1;
+    min-width: 130px;
+}
+
+.stats-section {
+    margin-top: 5rem;
+}
+
+.stats-section h2 {
+    color: var(--dark);
+    margin-bottom: 2.5rem;
+    font-size: 1.8rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2.5rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    padding: 2.5rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.25);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.35);
+}
+
+.stat-card h3 {
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+    opacity: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.stat-card p {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--white);
+}
+
+/* ============================================
+   PROFILE PAGE
+   ============================================ */
+
+.profile-container {
+    background: var(--white);
+    padding: 3.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    max-width: 900px;
+    margin: 4rem auto;
+    border-top: 5px solid var(--primary);
+}
+
+.profile-container h1 {
+    color: var(--dark);
+    margin-bottom: 3rem;
+    font-size: 2.2rem;
+}
+
+.profile-section {
+    margin-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.profile-section:last-child {
+    border-bottom: none;
+}
+
+.profile-section h2 {
+    color: var(--dark);
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.profile-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2.5rem;
+}
+
+.info-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--gray);
+    margin-bottom: 0.7rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-group p {
+    font-size: 1.2rem;
+    color: var(--dark);
+    font-weight: 700;
+}
+
+.security-info {
+    background: linear-gradient(135deg, var(--warning-light) 0%, #fde68a 100%);
+    padding: 2.5rem;
+    border-radius: 8px;
+    border-left: 5px solid var(--warning);
+    margin: 2rem 0;
+}
+
+.security-info p {
+    color: var(--dark);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.danger-zone {
+    background: linear-gradient(135deg, var(--danger-light) 0%, #fecaca 100%);
+    border: 2px solid #fecaca;
+    padding: 2.5rem;
+    border-radius: 8px;
+    border-left: 5px solid var(--danger);
+    margin: 2rem 0;
+}
+
+.danger-zone h2 {
+    color: var(--danger);
+}
+
+.danger-zone p {
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.danger-zone button {
+    margin-right: 1rem;
+    margin-top: 1rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+footer {
+    background: linear-gradient(135deg, var(--dark) 0%, #111827 100%);
+    color: var(--white);
+    text-align: center;
+    padding: 3.5rem;
+    margin-top: 6rem;
+    border-top: 3px solid var(--primary);
+    font-weight: 600;
+}
+
+footer p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* ============================================
+   RESPONSIVE DESIGN - DESKTOP 1360PX
+   ============================================ */
+
+@media (min-width: 1361px) {
+    /* Desktop XL - Optimized for 1360px+ */
+    .container {
+        max-width: 1320px;
+        padding: 0 40px;
+    }
+
+    h1 { font-size: 3.5rem; }
+    h2 { font-size: 2.5rem; }
+    h3 { font-size: 1.8rem; }
+
+    .nav-title {
+        font-size: 2.2rem;
+    }
+
+    .hero {
+        padding: 160px 60px;
+        margin: 50px 0;
+    }
+
+    .hero h1 {
+        font-size: 4rem;
+    }
+
+    .hero p {
+        font-size: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .hero-buttons {
+        gap: 3rem;
+    }
+
+    .hero-buttons a {
+        padding: 1.3rem 4rem;
+        font-size: 1.1rem;
+    }
+
+    .features {
+        margin: 150px 0;
+    }
+
+    .features h2 {
+        margin-bottom: 5rem;
+    }
+
+    .features-grid {
+        gap: 3.5rem;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .feature-card {
+        padding: 3.5rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.8rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 3.5rem;
+    }
+
+    .dashboard-card {
+        padding: 3.5rem;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.8rem;
+    }
+
+    .login-card {
+        padding: 4rem;
+        max-width: 500px;
+    }
+
+    .login-card h1 {
+        font-size: 2.5rem;
+    }
+
+    .login-card h2 {
+        font-size: 1.8rem;
+    }
+
+    .calculator-container {
+        padding: 4rem;
+        max-width: 750px;
+    }
+
+    .calculator-container h1 {
+        font-size: 2.8rem;
+    }
+
+    .profile-container {
+        padding: 4rem;
+        max-width: 1000px;
+    }
+
+    .profile-container h1 {
+        font-size: 2.8rem;
+    }
+
+    .history-container {
+        padding: 4rem;
+    }
+
+    .history-container h1 {
+        font-size: 2.8rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 3rem;
+    }
+
+    .stat-card {
+        padding: 3rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1rem;
+    }
+
+    .stat-card p {
+        font-size: 3rem;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        padding: 1.1rem 2.8rem;
+        font-size: 1.05rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 1.2rem 1.5rem;
+        font-size: 1.05rem;
+    }
+
+    .calculations-table th,
+    .calculations-table td {
+        padding: 1.8rem;
+        font-size: 1rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - TABLET 769PX-1360PX
+   ============================================ */
+
+@media (min-width: 769px) and (max-width: 1360px) {
+    .container {
+        max-width: 90%;
+        padding: 0 30px;
+    }
+
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+
+    .hero {
+        padding: 120px 40px;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .feature-card,
+    .dashboard-card {
+        padding: 2.5rem;
+    }
+
+    .calculator-container {
+        max-width: 600px;
+    }
+
+    .profile-container {
+        max-width: 900px;
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - MOBILE 390PX
+   ============================================ */
+
+@media (max-width: 390px) {
+    /* Mobile Optimized - 390px */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0 12px;
+    }
+
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+    h3 { font-size: 1rem; }
+    h4 { font-size: 0.9rem; }
+
+    p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Navigation */
+    .navbar {
+        padding: 0.8rem 0;
+    }
+
+    .nav-content {
+        padding: 0 12px;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .nav-title {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .nav-links {
+        width: 100%;
+        flex-direction: row;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-link {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        flex: 1;
+        min-width: 70px;
+    }
+
+    /* Hero Section */
+    .hero {
+        padding: 40px 15px;
+        margin: 15px 0;
+        border-radius: 12px;
+    }
+
+    .hero h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-buttons {
+        gap: 0.8rem;
+        flex-direction: column;
+    }
+
+    .hero-buttons a {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    /* Features Grid */
+    .features {
+        margin: 50px 0;
+    }
+
+    .features h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .feature-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .feature-card p {
+        font-size: 0.85rem;
+    }
+
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+        width: 100%;
+        border-radius: 8px;
+    }
+
+    /* Forms */
+    .form-group {
+        margin-bottom: 1.3rem;
+    }
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        border-radius: 6px;
+    }
+
+    /* Login Container */
+    .login-container {
+        padding: 15px;
+    }
+
+    .login-card {
+        padding: 1.5rem;
+        max-width: 100%;
+        border-radius: 12px;
+    }
+
+    .login-card h1 {
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .login-card h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-link,
+    .home-link {
+        font-size: 0.85rem;
+        margin-top: 1rem;
+    }
+
+    /* Dashboard */
+    .dashboard-header {
+        margin: 2rem 0;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.9rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .dashboard-card {
+        padding: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .dashboard-card p {
+        font-size: 0.85rem;
+    }
+
+    /* Calculator */
+    .calculator-container {
+        padding: 1.5rem;
+        max-width: 100%;
+        margin: 1.5rem 0;
+    }
+
+    .calculator-container h1 {
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .result-section {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .result-display {
+        font-size: 1.5rem;
+    }
+
+    /* Tables */
+    .calculations-table {
+        margin: 1.5rem 0;
+        font-size: 0.8rem;
+    }
+
+    .calculations-table th {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .calculations-table td {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* History */
+    .history-container {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .history-container h1 {
+        font-size: 1.4rem;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-section {
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-section button {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .stats-section {
+        margin-top: 2rem;
+    }
+
+    .stats-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .stat-card h3 {
+        font-size: 0.75rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .stat-card p {
+        font-size: 1.6rem;
+    }
+
+    /* Profile */
+    .profile-container {
+        padding: 1.5rem;
+        max-width: 100%;
+        margin: 1.5rem 0;
+    }
+
+    .profile-container h1 {
+        font-size: 1.4rem;
+    }
+
+    .profile-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .profile-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .profile-info {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .info-group label {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-group p {
+        font-size: 0.95rem;
+    }
+
+    .security-info,
+    .danger-zone {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .danger-zone button {
+        display: block;
+        width: 100%;
+        margin: 0.8rem 0;
+    }
+
+    /* Messages */
+    .message {
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: 1.5rem;
+        margin-top: 3rem;
+    }
+
+    footer p {
+        font-size: 0.8rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - SMALL MOBILE <390PX
+   ============================================ */
+
+@media (max-width: 375px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    h1 { font-size: 1.3rem; }
+    h2 { font-size: 1.1rem; }
+
+    .nav-link {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+        min-width: 60px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .login-card {
+        padding: 1.2rem;
+    }
+}

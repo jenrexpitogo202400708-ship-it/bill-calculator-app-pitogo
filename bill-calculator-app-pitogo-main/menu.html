@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu - Electric Bill Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Load Supabase scripts FIRST -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase_config.js"></script>
+  <script src="js/auth.js"></script>
+</head>
+
+<body style="background-color: #E2BCBC;">
+
+<div class="phone">
+
+  <h2 class="title">Menu</h2>
+
+  <a href="report.html" class="button">Payment Report</a>
+  <a href="profile.html" class="button">Profile</a>
+  <a href="history.html" class="button">Billing History</a>
+  <a href="dashboard.html" class="button back-btn">Back</a>
+
+  <button onclick="handleLogout()" class="button" style="background:#d23cff; margin-top:12px;">Logout</button>
+
+</div>
+
+<script>
+// Protect page - require authentication
+document.addEventListener("DOMContentLoaded", async () => {
+  await requireAuth("login.html");
+});
+
+async function handleLogout() {
+  const success = await signOut();
+  if (success) {
+    alert("You have been logged out.");
+    window.location.href = "login.html";
+  } else {
+    alert("Error logging out. Please try again.");
+  }
+}
+</script>
+
+</body>
+</html>

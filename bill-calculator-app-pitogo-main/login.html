@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Electric Bill Calculator</title>
+  
+  <!-- Load Supabase scripts FIRST -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase_config.js"></script>
+  <script src="js/auth.js"></script>
+</head>
+
+<body style="background-color: #E2BCBC;">
+
+<div class="phone">
+
+  <h2 class="title">Login</h2>
+  <div class="logo">⚡</div>
+
+  <form onsubmit="return loginUser()">
+
+    <div class="input-box">
+      <input id="login-email" type="email" placeholder="Email" required>
+    </div>
+
+    <div class="input-box">
+      <input id="login-password" type="password" placeholder="Password" required>
+    </div>
+
+    <div class="button">
+      <button type="submit">Log In</button>
+    </div>
+
+  </form>
+
+  <a href="form.html" class="button back-btn">Back</a>
+
+</div>
+
+  
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  // If already authenticated, redirect to dashboard. Do not forcibly sign out.
+  try {
+    await redirectIfAuthenticated();
+  } catch (e) {
+    console.warn('redirectIfAuthenticated failed:', e);
+  }
+  // Listen for auth state changes to handle redirects after sign-in
+  try {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session);
+      if (event === 'SIGNED_IN' && session?.user) {
+        const dst = (typeof siteUrl !== 'undefined' ? siteUrl.replace(/\/$/, '') : '') + '/dashboard.html';
+        window.location.href = dst;
+      }
+    });
+  } catch (e) {
+    console.warn('onAuthStateChange listener failed to attach:', e);
+  }
+});
+
+async function loginUser() {
+  const email = document.getElementById("login-email").value.trim();
+  const pass = document.getElementById("login-password").value.trim();
+
+  if (!email || !pass) {
+    alert("Please enter Email and Password.");
+    return false;
+  }
+
+  try {
+    // Sign in with Supabase Auth
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+
+    console.log("Login attempt:", { email, error, data });
+
+    if (error) {
+      console.error("Login error:", error.message);
+      alert("Login failed: " + (error.message || "Please check your credentials."));
+      return false;
+    }
+
+    // Try to obtain the user object from multiple places (data.user, session.user, or getUser())
+    let user = data?.user ?? data?.session?.user ?? null;
+    if (!user) {
+      try {
+        const { data: userData, error: userErr } = await supabaseClient.auth.getUser();
+        if (userErr) console.warn('getUser error after signIn:', userErr);
+        user = userData?.user ?? null;
+      } catch (e) {
+        console.warn('getUser threw after signIn:', e);
+      }
+    }
+
+    if (!user) {
+      console.error("No user returned from login");
+      alert("Unable to log in. Try again.");
+      return false;
+    }
+    console.log("User logged in:", { email: user.email, confirmed_at: user.email_confirmed_at });
+
+    // Email confirmation enforcement. For development/testing you can allow unconfirmed users
+    // to proceed by toggling `ALLOW_UNCONFIRMED_LOGIN` below.
+    const ALLOW_UNCONFIRMED_LOGIN = true; // <-- set to false to require email confirmation
+    const confirmedAt = user.email_confirmed_at || user.confirmed_at || user.email_confirmed; // try common keys
+    if (!confirmedAt && !ALLOW_UNCONFIRMED_LOGIN) {
+      // Log out the session to prevent partial access
+      try {
+        await supabaseClient.auth.signOut();
+      } catch (e) {
+        console.warn('Sign out after unconfirmed login failed:', e);
+      }
+      alert('Please confirm your email first. Check your inbox for the confirmation link.');
+      return false;
+    }
+
+    // Ensure client has the session stored, then redirect to dashboard
+    try {
+      // refresh/get current session to ensure persistence
+      await supabaseClient.auth.getSession();
+    } catch (e) {
+      console.warn('getSession after signIn failed:', e);
+    }
+
+    console.log("Login OK. Redirecting to dashboard...", { confirmedAt, ALLOW_UNCONFIRMED_LOGIN });
+    setTimeout(() => {
+      // use siteUrl fallback to ensure correct origin
+      const dst = (typeof siteUrl !== 'undefined' ? siteUrl.replace(/\/$/, '') : '') + '/dashboard.html';
+      window.location.href = dst;
+    }, 300);
+    
+  } catch (err) {
+    console.error("Login exception:", err);
+    alert("Login error: " + err.message);
+  }
+
+  return false;
+}
+</script>
+
+
+</body>
+</html>

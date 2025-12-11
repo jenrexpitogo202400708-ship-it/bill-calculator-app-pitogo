@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Electric Bill Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1>Electric Bill Calculator</h1>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="reg_name">Full Name</label>
+                    <input type="text" id="reg_name" name="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="reg_email">Email</label>
+                    <input type="email" id="reg_email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="reg_password">Password</label>
+                    <input type="password" id="reg_password" name="password" required placeholder="At least 6 characters">
+                </div>
+                <div class="form-group">
+                    <label for="reg_confirm_password">Confirm Password</label>
+                    <input type="password" id="reg_confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                </div>
+                <button type="button" class="btn-primary" onclick="handleRegister()">Register</button>
+            </form>
+            <p class="auth-link">Already have an account? <a href="login.html">Login here</a></p>
+            <p class="home-link"><a href="index.html">Back to Home</a></p>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Supabase scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Check if user is already logged in
+        document.addEventListener("DOMContentLoaded", async () => {
+            await redirectIfAuthenticated();
+        });
+
+        async function handleRegister() {
+            const name = document.getElementById("reg_name").value.trim();
+            const email = document.getElementById("reg_email").value.trim();
+            const password = document.getElementById("reg_password").value;
+            const confirmPassword = document.getElementById("reg_confirm_password").value;
+            const messageDiv = document.getElementById("message");
+
+            // Validation
+            if (!name || !email || !password || !confirmPassword) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Please fill in all fields!";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Passwords do not match!";
+                return;
+            }
+
+            if (password.length < 6) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Password must be at least 6 characters!";
+                return;
+            }
+
+            // Register user with Supabase
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: name
+                    }
+                }
+            });
+
+            if (error) {
+                messageDiv.className = "message error";
+                messageDiv.textContent = "Registration failed: " + error.message;
+                console.error("Registration error:", error);
+                return;
+            }
+
+            messageDiv.className = "message success";
+            messageDiv.textContent = "✓ Registration successful! Check your email to confirm your account, then login.";
+            
+            // Clear form
+            document.getElementById("registerForm").reset();
+            
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 3000);
+        }
+
+        // Allow Enter key to submit
+        document.getElementById("registerForm").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                handleRegister();
+            }
+        });
+    </script>
+</body>
+</html>
